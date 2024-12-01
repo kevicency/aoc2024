@@ -1,14 +1,20 @@
+import re
+from collections import Counter
+
 from aocd import data, submit
 
-lines = [line for line in data.splitlines()]
+[left, right] = map(sorted, zip(*[map(int, re.split(r'\s+', line)) for line in data.splitlines()]))
+
 
 def part1():
-    return None
+    return sum([abs(l - r) for l, r in zip(left, right)])
 
 
 def part2():
-    return None
+    c = Counter(right)
+    return sum([l * c[l] for l in left])
 
 
-submit(part1(), part="a")
-submit(part2(), part="b")
+if __name__ == '__main__':
+    submit(part1(), part="a")
+    submit(part2(), part="b")
