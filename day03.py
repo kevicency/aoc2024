@@ -1,4 +1,3 @@
-import functools
 import re
 
 from aocd import puzzle
@@ -11,7 +10,7 @@ def parse(raw: str):
 
 
 def part1(raw: str):
-    return sum([int(a) * int(b) for op, a, b in parse(raw) if op.startswith('mul')])
+    return sum([int(a) * int(b) for op, a, b in parse(raw) if 'mul' in op])
 
 
 def test_part1_ex():
@@ -20,11 +19,13 @@ def test_part1_ex():
 
 
 def part2(raw: str):
-    def step(acc, instr):
-        (s, m), (op, a, b) = acc, instr
-        return (s + (int(a) * int(b) * m), m) if op.startswith('mul') else (s, 't' not in op)
+    def rec(acc, ops):
+        if not ops:
+            return acc
+        (s, m), (op, a, b) = acc, ops[0]
+        return rec((s + int(a) * int(b) * m, m) if 'mul' in op else (s, 't' not in op), ops[1:])
 
-    return functools.reduce(step, parse(raw), (0, 1))[0]
+    return rec((0, 1), parse(raw))[0]
 
 
 def test_part2_ex():
