@@ -1,9 +1,11 @@
 import re
+
 import numpy as np
+from aocd import data, puzzle
 
-from aocd import data, submit
 
-reports = [list(map(int, re.split(r'\s', line))) for line in data.splitlines()]
+def parse(raw: str):
+    return [list(map(int, re.split(r'\s', line))) for line in raw.splitlines()]
 
 
 def is_safe(report):
@@ -12,14 +14,16 @@ def is_safe(report):
 
     return all(0 < abs(d) < 4 and np.sign(d) == s for d in deltas)
 
-def solve(safe_fn):
+
+def solve(reports, safe_fn):
     return sum(+safe_fn(report) for report in reports)
 
-def part1():
-    return solve(is_safe)
+
+def part1(raw: str):
+    return solve(parse(raw), is_safe)
 
 
-def is_any_safe(report):
+def is_safe_dampened(report):
     if is_safe(report):
         return True
     for i in range(len(report)):
@@ -28,10 +32,20 @@ def is_any_safe(report):
     return False
 
 
-def part2():
-    return solve(is_any_safe)
+def part2(raw: str):
+    return solve(parse(raw), is_safe_dampened)
+
+
+def test_part1_ex():
+    for ex in puzzle.examples:
+        assert ex.answer_a == str(part1(ex.input_data))
+
+
+def test_part2_ex():
+    for ex in puzzle.examples:
+        assert ex.answer_b == str(part2(ex.input_data) - 100)
 
 
 if __name__ == '__main__':
-    submit(part1(), part="a")
-    submit(part2(), part="b")
+    puzzle.answer_a = part1(data)
+    puzzle.answer_b = part2(data)
